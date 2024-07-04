@@ -9,7 +9,7 @@ def canUnlockAll(boxes):
     Determines if all the boxes can be opened.
 
     Args:
-        boxes (list of list of int): A list where each sublist represents the keys
+    boxes (list of list of int):list where each sublist represents the keys
                                      contained in a specific box.
 
     Returns:
