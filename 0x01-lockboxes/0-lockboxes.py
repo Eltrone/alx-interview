@@ -1,31 +1,32 @@
 #!/usr/bin/python3
 """
-Module 0-lockboxes
-Contains function that determines if all boxes can be opened
+Module that defines the canUnlockAll function.
 """
+
 
 def canUnlockAll(boxes):
     """
-    Determines if all boxes can be opened
+    Determines if all the boxes can be opened.
 
-    Parameters:
-    boxes (list of list of int): list of boxes with keys
+    Args:
+        boxes (list of list of int): A list where each sublist represents the keys
+                                     contained in a specific box.
 
     Returns:
-    bool: True if all boxes can be opened, False otherwise
+        bool: True if all boxes can be opened, False otherwise.
     """
     if not boxes:
         return False
 
-    unlocked = set()
-    keys = [0]  # Start with the first box unlocked
+    unlocked_boxes = set()
+    keys = [0]
+    unlocked_boxes.add(0)
 
     while keys:
-        key = keys.pop()
-        if key not in unlocked:
-            unlocked.add(key)
-            for new_key in boxes[key]:
-                if new_key not in unlocked:
-                    keys.append(new_key)
+        current_key = keys.pop(0)
+        for key in boxes[current_key]:
+            if key < len(boxes) and key not in unlocked_boxes:
+                unlocked_boxes.add(key)
+                keys.append(key)
 
-    return len(unlocked) == len(boxes)
+    return len(unlocked_boxes) == len(boxes)
