@@ -1,48 +1,54 @@
 #!/usr/bin/python3
+""" Script for parsing log data from stdin and computing metrics. """
+
 import sys
 import signal
 
-def signal_handler(sig, frame):
-    """ Handle SIGINT to print stats on keyboard interruption """
-    print_stats()
-    sys.exit(0)
-
-def print_stats():
-    """ Print the current log parsing statistics """
-    print("File size: {}".format(total_size))
-    for code in sorted(status_codes):
-        if status_codes[code] > 0:
-            print("{}: {}".format(code, status_codes[code]))
-
-# Initialize status codes and total file size
-status_codes = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
+# Initialize counters and total file size.
+status_codes = {"200": 0, "301": 0, "400": 0, "401": 0, "403": 0, "404": 0, "405": 0, "500": 0}
 total_size = 0
 line_count = 0
 
-# Setup signal handling for keyboard interruption (CTRL+C)
-signal.signal(signal.SIGINT, signal_handler)
+def print_stats():
+    """ Prints accumulated statistics from log data. """
+    print(f"File size: {total_size}")
+    for code in sorted(status_codes.keys()):
+        if status_codes[code] > 0:
+            print(f"{code}: {status_codes[code]}")
+
+def handle_signal(sig, frame):
+    """ Handles SIGINT (e.g., CTRL+C) by printing stats and exiting. """
+    print_stats()
+    sys.exit(0)
+
+# Register signal handler for handling CTRL+C.
+signal.signal(signal.SIGINT, handle_signal)
 
 try:
-    # Read from stdin line by line
+    # Read from stdin line by line.
     for line in sys.stdin:
         parts = line.strip().split()
-        if len(parts) != 12 or not parts[5].isdigit() or not parts[6].isdigit():
-            continue  # Skip the line if format is incorrect
+        if len(parts) < 7 or not parts[-2].isdigit():
+            continue  # Skip invalid format lines.
 
-        status_code = int(parts[5])
-        file_size = int(parts[6])
+        file_size = int(parts[-1])
+        status_code = parts[-2]
 
-        # Update the status code count and total file size
+        total_size += file_size
+
         if status_code in status_codes:
             status_codes[status_code] += 1
-            total_size += file_size
-            line_count += 1
 
-        # Print statistics every 10 lines or on keyboard interruption
+        line_count += 1
+
         if line_count == 10:
             print_stats()
             line_count = 0
 
 except KeyboardInterrupt:
-    # Ensure stats are printed even if program is interrupted
+    # Print stats in case of program interruption.
+    print_stats()
+
+finally:
+    # Ensure final stats are printed when stream ends.
     print_stats()
