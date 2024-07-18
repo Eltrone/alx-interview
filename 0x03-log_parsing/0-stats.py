@@ -3,6 +3,7 @@
 
 import sys
 import signal
+import re
 
 # Initialize counters and total file size.
 status_codes = {
@@ -12,7 +13,6 @@ status_codes = {
 total_file_size = 0
 line_count = 0
 
-
 def print_stats():
     """ Prints accumulated statistics from log data. """
     print(f"File size: {total_file_size}")
@@ -20,37 +20,37 @@ def print_stats():
         if status_codes[code] > 0:
             print(f"{code}: {status_codes[code]}")
 
-
 def handle_signal(sig, frame):
     """ Handles SIGINT (CTRL+C) by printing stats and exiting. """
     print_stats()
     sys.exit(0)
 
-
 # Register signal handler for handling CTRL+C.
 signal.signal(signal.SIGINT, handle_signal)
 
+# Regex pattern to match the required log format
+log_pattern = re.compile(
+    r'^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) - \[(.*?)\] "GET /projects/260 HTTP/1\.1" (\d{3}) (\d+)$'
+)
 
 try:
     # Read from stdin line by line.
     for line in sys.stdin:
-        parts = line.strip().split()
-        if len(parts) < 7 or not parts[-2].isdigit():
-            continue  # Skip invalid format lines.
+        if match := log_pattern.match(line.strip()):
+            ip, date, status_code, file_size = match.groups()
+            file_size = int(file_size)
+            status_code = status_code
 
-        file_size = int(parts[-1])
-        status_code = parts[-2]
+            total_file_size += file_size
 
-        total_file_size += file_size
+            if status_code in status_codes:
+                status_codes[status_code] += 1
 
-        if status_code in status_codes:
-            status_codes[status_code] += 1
+            line_count += 1
 
-        line_count += 1
-
-        if line_count == 10:
-            print_stats()
-            line_count = 0
+            if line_count == 10:
+                print_stats()
+                line_count = 0
 
 except KeyboardInterrupt:
     print_stats()
