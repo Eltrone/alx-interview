@@ -5,9 +5,11 @@ This module solves the N Queens problem using backtracking.
 
 import sys
 
+
 def print_board(board):
     """Prints the current board configuration."""
     print([list(b) for b in board])
+
 
 def is_safe(board, row, col):
     """Checks if it's safe to place a queen at board[row][col]."""
@@ -22,6 +24,7 @@ def is_safe(board, row, col):
             return False
     return True
 
+
 def solve_nqueens(board, col):
     """Uses backtracking to find all solutions."""
     if col >= len(board):
@@ -32,6 +35,7 @@ def solve_nqueens(board, col):
             board[i][col] = 1
             solve_nqueens(board, col + 1)
             board[i][col] = 0
+
 
 def main():
     if len(sys.argv) != 2:
@@ -49,6 +53,7 @@ def main():
     # Initialize the board
     board = [[0]*n for _ in range(n)]
     solve_nqueens(board, 0)
+
 
 if __name__ == "__main__":
     main()
