@@ -3,36 +3,36 @@ const request = require('request');
 const movieId = process.argv[2];
 
 if (!movieId) {
-  console.log('Erreur: Utilisez ce format: ./0-starwars_characters.js <ID du film>');
+  console.error('Usage: node 0-starwars_characters.js <Movie ID>');
   process.exit(1);
 }
 
-const apiUrl = `https://swapi-api.alx-tools.com/api/films/${movieId}/`;
+const baseUrl = `https://swapi-api.alx-tools.com/api/films/${movieId}/`;
 
-const fetchFromApi = (url) => {
+function requestApi(url) {
   return new Promise((resolve, reject) => {
-    request(url, { json: true }, (error, response, body) => {
-      if (error) {
-        reject(error);
+    request(url, { json: true }, (err, res, body) => {
+      if (err) {
+        reject(err);
       } else {
         resolve(body);
       }
     });
   });
-};
+}
 
-const displayCharacters = async () => {
+async function getCharacters() {
   try {
-    const filmDetails = await fetchFromApi(apiUrl);
-    const characterEndpoints = filmDetails.characters;
+    const movieResponse = await requestApi(baseUrl);
+    const charactersList = movieResponse.characters;
 
-    for (let endpoint of characterEndpoints) {
-      const characterDetails = await fetchFromApi(endpoint);
-      console.log(characterDetails.name);
+    for (const characterUrl of charactersList) {
+      const characterInfo = await requestApi(characterUrl);
+      console.log(characterInfo.name);
     }
   } catch (error) {
-    console.error('Erreur lors de la récupération:', error);
+    console.error('Fetch Error:', error);
   }
-};
+}
 
-displayCharacters();
+getCharacters();
