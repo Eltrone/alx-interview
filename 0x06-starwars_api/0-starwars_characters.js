@@ -3,36 +3,36 @@ const request = require('request');
 const movieId = process.argv[2];
 
 if (!movieId) {
-  console.error('Usage: node 0-starwars_characters.js <Movie ID>');
+  console.error('Usage: ./0-starwars_characters.js <Movie ID>');
   process.exit(1);
 }
 
-const baseUrl = `https://swapi-api.alx-tools.com/api/films/${movieId}/`;
+const apiUrl = `https://swapi-api.alx-tools.com/api/films/${movieId}/`;
 
-function requestApi(url) {
+const makeRequest = (url) => {
   return new Promise((resolve, reject) => {
-    request(url, { json: true }, (err, res, body) => {
-      if (err) {
-        reject(err);
+    request(url, (error, response, body) => {
+      if (error) {
+        reject(error);
       } else {
-        resolve(body);
+        resolve(JSON.parse(body));
       }
     });
   });
-}
+};
 
-async function getCharacters() {
+const fetchCharacters = async () => {
   try {
-    const movieResponse = await requestApi(baseUrl);
-    const charactersList = movieResponse.characters;
+    const movieData = await makeRequest(apiUrl);
+    const characterUrls = movieData.characters;
 
-    for (const characterUrl of charactersList) {
-      const characterInfo = await requestApi(characterUrl);
-      console.log(characterInfo.name);
+    for (const url of characterUrls) {
+      const characterData = await makeRequest(url);
+      console.log(characterData.name);
     }
   } catch (error) {
-    console.error('Fetch Error:', error);
+    console.error('Error:', error);
   }
-}
+};
 
-getCharacters();
+fetchCharacters();
