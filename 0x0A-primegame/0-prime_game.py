@@ -1,10 +1,13 @@
 #!/usr/bin/python3
 """
-Module for the Prime Game simulation where Maria and Ben play a game involving prime numbers.
+Module for the Prime Game simulation where Maria and Ben
+play a game involving prime numbers.
 """
 
+
 def get_primes_up_to(n):
-    """Return a list of prime numbers up to n using a prime number sieve algorithm."""
+    """Return a list of prime numbers up to n using a
+    prime number sieve algorithm."""
     prime = [True] * (n + 1)
     p = 2
     while p * p <= n:
@@ -14,15 +17,18 @@ def get_primes_up_to(n):
         p += 1
     return [p for p in range(2, n + 1) if prime[p]]
 
+
 def isWinner(x, nums):
-    """Determines the winner of the game based on prime number strategies.
-    
+    """Determines the winner of the game based on
+    prime number strategies.
+
     Args:
         x (int): Number of rounds.
         nums (list): List of upper limits for each round.
-        
+
     Returns:
-        str: 'Maria' if Maria wins more rounds, 'Ben' if Ben wins more rounds, None if it's a draw.
+        str: 'Maria' if Maria wins more rounds,
+        Ben' if Ben wins more rounds, None if it's a draw.
     """
     if x <= 0:
         return None
@@ -55,7 +61,9 @@ def isWinner(x, nums):
     else:
         return None
 
+
 if __name__ == "__main__":
     x = int(input("Enter the number of rounds: "))
-    nums = list(map(int, input("Enter the list of numbers for each round: ").split()))
+    nums = list(
+        map(int, input("Enter the list of numbers for each round: ").split()))
     print("Winner: {}".format(isWinner(x, nums)))
