@@ -3,8 +3,8 @@
 Module for the Prime Game simulation where Maria and Ben play a game involving prime numbers.
 """
 
-def sieve_of_eratosthenes(n):
-    """Return a list of prime numbers up to n using the Sieve of Eratosthenes algorithm."""
+def get_primes_up_to(n):
+    """Return a list of prime numbers up to n using a prime number sieve algorithm."""
     prime = [True] * (n + 1)
     p = 2
     while p * p <= n:
@@ -27,7 +27,7 @@ def isWinner(x, nums):
     if x <= 0:
         return None
 
-    primes = sieve_of_eratosthenes(max(nums)) if nums else []
+    primes = get_primes_up_to(max(nums)) if nums else []
 
     maria_wins = 0
     ben_wins = 0
