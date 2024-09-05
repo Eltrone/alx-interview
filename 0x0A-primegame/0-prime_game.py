@@ -1,6 +1,4 @@
 #!/usr/bin/python3
-
-
 def sieve_of_eratosthenes(n):
     prime = [True] * (n + 1)
     p = 2
@@ -20,21 +18,23 @@ def isWinner(x, nums):
     from functools import lru_cache
 
     @lru_cache(None)
-    def can_win(n):
+    def can_win(n, turn):
         primes = sieve_of_eratosthenes(n)
         if not primes:
-            return False
+            return False if turn == "Maria" else True
         for prime in primes:
-            if not can_win(n - prime):
+            if not can_win(n - prime, "Ben" if turn == "Maria" else "Maria"):
                 return True
         return False
 
     maria_wins = 0
+    ben_wins = 0
     for n in nums:
-        if can_win(n):
+        if can_win(n, "Maria"):
             maria_wins += 1
+        else:
+            ben_wins += 1
 
-    ben_wins = x - maria_wins
     if maria_wins > ben_wins:
         return "Maria"
     elif ben_wins > maria_wins:
