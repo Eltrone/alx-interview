@@ -1,5 +1,10 @@
 #!/usr/bin/python3
+"""
+Module for the Prime Game simulation where Maria and Ben play a game involving prime numbers.
+"""
+
 def sieve_of_eratosthenes(n):
+    """Return a list of prime numbers up to n using the Sieve of Eratosthenes algorithm."""
     prime = [True] * (n + 1)
     p = 2
     while p * p <= n:
@@ -7,30 +12,38 @@ def sieve_of_eratosthenes(n):
             for i in range(p * p, n + 1, p):
                 prime[i] = False
         p += 1
-    primes = []
-    for p in range(2, n + 1):
-        if prime[p]:
-            primes.append(p)
-    return primes
-
+    return [p for p in range(2, n + 1) if prime[p]]
 
 def isWinner(x, nums):
-    from functools import lru_cache
+    """Determines the winner of the game based on prime number strategies.
+    
+    Args:
+        x (int): Number of rounds.
+        nums (list): List of upper limits for each round.
+        
+    Returns:
+        str: 'Maria' if Maria wins more rounds, 'Ben' if Ben wins more rounds, None if it's a draw.
+    """
+    if x <= 0:
+        return None
 
-    @lru_cache(None)
-    def can_win(n, turn):
-        primes = sieve_of_eratosthenes(n)
-        if not primes:
-            return False if turn == "Maria" else True
-        for prime in primes:
-            if not can_win(n - prime, "Ben" if turn == "Maria" else "Maria"):
-                return True
-        return False
+    primes = sieve_of_eratosthenes(max(nums)) if nums else []
 
     maria_wins = 0
     ben_wins = 0
+
     for n in nums:
-        if can_win(n, "Maria"):
+        prime_moves = 0
+        available = [True] * (n + 1)
+        for prime in primes:
+            if prime > n:
+                break
+            if available[prime]:
+                prime_moves += 1
+                for multiple in range(prime, n + 1, prime):
+                    available[multiple] = False
+
+        if prime_moves % 2 == 1:
             maria_wins += 1
         else:
             ben_wins += 1
@@ -42,9 +55,7 @@ def isWinner(x, nums):
     else:
         return None
 
-
 if __name__ == "__main__":
     x = int(input("Enter the number of rounds: "))
-    nums_input = input("Enter the list of numbers for each round: ")
-    nums = list(map(int, nums_input.split()))
+    nums = list(map(int, input("Enter the list of numbers for each round: ").split()))
     print("Winner: {}".format(isWinner(x, nums)))
